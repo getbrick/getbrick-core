@@ -44,20 +44,12 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '.mvn/**') }}
           restore-keys: ${{ runner.os }}-m2-
 
-      # The parent POM and the BOM are consumed from the previous build. They are published from
-      # getbrick-build; on tag builds both are built together in one reactor.
-      - name: Build parent and BOM
-        if: startsWith(github.ref, 'refs/tags/')
-        run: git clone --depth 1 "https://github.com/getbrick/getbrick-build.git" ../getbrick-build
+      # The parent POM and the BOM come from getbrick-build, which is versioned in lockstep.
+      # A shallow clone is enough; snapshots are resolved from GitHub Packages when available.
       - name: Install parent and BOM
-        if: startsWith(github.ref, 'refs/tags/')
-        working-directory: ${{ startsWith(github.ref, 'refs/tags/') && '../getbrick-build' || '.' }}
-        run: ./mvnw -B -ntp -DskipTests -Dgpg.skip install
-      - name: Build against the published parent
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: |
           git clone --depth 1 "https://github.com/getbrick/getbrick-build.git" ../getbrick-build
-          (cd ../getbrick-build && ./mvnw -B -ntp -DskipTests -Dgpg.skip install)
+          (cd ../getbrick-build && ./mvnw -B -ntp -DskipTests install)
 
       - name: Verify
         run: ./mvnw $MAVEN_ARGS verify
@@ -96,7 +88,7 @@ jobs:
       - name: Install parent and BOM
         run: |
           git clone --depth 1 "https://github.com/getbrick/getbrick-build.git" ../getbrick-build
-          (cd ../getbrick-build && ./mvnw -B -ntp -DskipTests -Dgpg.skip install)
+          (cd ../getbrick-build && ./mvnw -B -ntp -DskipTests install)
 
       - name: SpotBugs, coverage floor and dependency analysis
         run: ./mvnw $MAVEN_ARGS -Pquality verify
@@ -119,3 +111,48 @@ jobs:
 
       - name: config/ must match getbrick-build
         run: ./getbrick-build/scripts/install-build-config.sh "$GITHUB_WORKSPACE" --check
+
+  reproducible:
+    name: Reproducible build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '.mvn/**') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      - name: Install parent and BOM
+        run: |
+          git clone --depth 1 "https://github.com/getbrick/getbrick-build.git" ../getbrick-build
+          (cd ../getbrick-build && ./mvnw -B -ntp -DskipTests install)
+
+      - name: Build twice and compare checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          check() {
+            ./mvnw -B -ntp -DskipTests -Dcheckstyle.skip -Dspotless.check.skip -Denforcer.skip clean package
+            find . -name '*.jar' -path '*/target/*' -not -name '*-sources.jar' -not -name '*-javadoc.jar' \
+              | sort | xargs --no-run-if-empty sha256sum | sed 's#\./##'
+          }
+          check > /tmp/first.txt
+          check > /tmp/second.txt
+          if ! diff -u /tmp/first.txt /tmp/second.txt; then
+            echo "::error::Build is not reproducible: artifact checksums differ between runs."
+            exit 1
+          fi
+          if [ ! -s /tmp/first.txt ]; then
+            echo "::error::No jar artifacts were produced, so nothing was actually verified."
+            exit 1
+          fi
+          echo "Reproducible build verified for $(wc -l < /tmp/first.txt) artifact(s)."

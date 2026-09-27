@@ -25,14 +25,6 @@
         </license>
     </licenses>
 
-    <modules>
-        <module>getbrick-common</module>
-        <module>getbrick-core</module>
-        <module>getbrick-beans</module>
-        <module>getbrick-context</module>
-        <module>getbrick-expression</module>
-        <module>getbrick-web</module>
-    </modules>
 
     <scm>
         <connection>scm:git:git@github.com:getbrick/getbrick-core.git</connection>
