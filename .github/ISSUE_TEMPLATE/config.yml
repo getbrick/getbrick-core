@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Getbrick Foundation Framework
+    url: https://github.com/getbrick/getbrick-core/discussions
+    about: Questions about the framework modules and how to use them.
+  - name: Getbrick on GitHub
+    url: https://github.com/getbrick
+    about: Organisation overview and the full list of repositories.

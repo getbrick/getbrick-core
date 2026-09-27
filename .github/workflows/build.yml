@@ -1,0 +1,121 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_ARGS: -B -ntp --strict-checksums
+
+jobs:
+  build:
+    name: JDK ${{ matrix.java }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        java: ['25']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '.mvn/**') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      # The parent POM and the BOM are consumed from the previous build. They are published from
+      # getbrick-build; on tag builds both are built together in one reactor.
+      - name: Build parent and BOM
+        if: startsWith(github.ref, 'refs/tags/')
+        run: git clone --depth 1 "https://github.com/getbrick/getbrick-build.git" ../getbrick-build
+      - name: Install parent and BOM
+        if: startsWith(github.ref, 'refs/tags/')
+        working-directory: ${{ startsWith(github.ref, 'refs/tags/') && '../getbrick-build' || '.' }}
+        run: ./mvnw -B -ntp -DskipTests -Dgpg.skip install
+      - name: Build against the published parent
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          git clone --depth 1 "https://github.com/getbrick/getbrick-build.git" ../getbrick-build
+          (cd ../getbrick-build && ./mvnw -B -ntp -DskipTests -Dgpg.skip install)
+
+      - name: Verify
+        run: ./mvnw $MAVEN_ARGS verify
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ matrix.os }}-jdk${{ matrix.java }}
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
+            **/target/site/jacoco/jacoco.xml
+          retention-days: 7
+          if-no-files-found: ignore
+
+  quality:
+    name: Quality gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '.mvn/**') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      - name: Install parent and BOM
+        run: |
+          git clone --depth 1 "https://github.com/getbrick/getbrick-build.git" ../getbrick-build
+          (cd ../getbrick-build && ./mvnw -B -ntp -DskipTests -Dgpg.skip install)
+
+      - name: SpotBugs, coverage floor and dependency analysis
+        run: ./mvnw $MAVEN_ARGS -Pquality verify
+
+      - name: Dependency convergence
+        run: ./mvnw $MAVEN_ARGS -Pstrict -DskipTests validate
+
+  config-drift:
+    name: Build config drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@v5
+        with:
+          repository: getbrick/getbrick-build
+          path: getbrick-build
+
+      - name: config/ must match getbrick-build
+        run: ./getbrick-build/scripts/install-build-config.sh "$GITHUB_WORKSPACE" --check

@@ -1,0 +1,6 @@
+# Default owners for everything in this repository.
+* @getbrick/arch
+
+# Shared build configuration comes from getbrick-build; keep it in sync.
+config/ @getbrick/infra
+pom.xml @getbrick/arch @getbrick/infra

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+        xmlns="https://github.com/spotbugs/filter/3.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/etc/findbugsfilter.xsd">
+    <!-- Framework code intentionally hands out and stores mutable arrays. -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2"/>
+    </Match>
+    <!-- Plugin loading uses ServiceLoader and reflection by design. -->
+    <Match>
+        <Bug pattern="DP_CREATE_CLASSLOAD_INSIDE_DO_PRIVILEGED,DP_DO_INSIDE_DO_PRIVILEGED"/>
+    </Match>
+</FindBugsFilter>

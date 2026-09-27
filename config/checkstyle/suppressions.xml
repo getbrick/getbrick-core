@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<suppressions>
+    <!--
+      In package-info.java the Javadoc after the package statement IS the package documentation.
+      Checkstyle 10.3+ replaced JavadocPosition with InvalidJavadocPosition, which no longer has
+      an allowAfterPackage escape hatch.
+    -->
+    <suppress files="package-info\.java$" checks="InvalidJavadocPosition"/>
+
+    <!-- Test code: naming, javadoc and line length rules are noise here. -->
+    <suppress files="[\\/]src[\\/]test[\\/]" checks="Javadoc|MissingJavadoc|AbbreviationAsWordInName|LineLength"/>
+    <suppress files="[\\/]src[\\/]test[\\/]" checks="MagicNumber|VariableDeclarationUsageDistance"/>
+
+    <!-- Generated sources, never authored by hand. -->
+    <suppress files="[\\/]target[\\/]" checks=".*"/>
+</suppressions>

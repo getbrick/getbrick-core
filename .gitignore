@@ -1,0 +1,50 @@
+# ===== Maven build output =====
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# ===== Maven / IDE generated descriptors =====
+dependency-reduced-pom.xml
+.flattened-pom.xml
+release.properties
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ===== IDEs =====
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+nb-configuration.xml
+*.nbproject/
+*.esproj
+.code-workspace
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Logs =====
+*.log
+*.logs
+logs/
+hs_err_pid*.log
+replay_pid*.log
+
+# ===== Local overrides (never commit credentials) =====
+settings.xml
+settings-security.xml
+.m2/

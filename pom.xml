@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.getbrick</groupId>
+        <artifactId>getbrick-build</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath />
+    </parent>
+
+    <artifactId>getbrick-core-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Getbrick Core</name>
+    <description>Getbrick Foundation Framework - core modules</description>
+    <url>https://github.com/getbrick/getbrick-core</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <modules>
+        <module>getbrick-common</module>
+        <module>getbrick-core</module>
+        <module>getbrick-beans</module>
+        <module>getbrick-context</module>
+        <module>getbrick-expression</module>
+        <module>getbrick-web</module>
+    </modules>
+
+    <scm>
+        <connection>scm:git:git@github.com:getbrick/getbrick-core.git</connection>
+        <developerConnection>scm:git:git@github.com:getbrick/getbrick-core.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/getbrick/getbrick-core</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/getbrick/getbrick-core/issues</url>
+    </issueManagement>
+
+    <properties>
+        <!-- Version of the getbrick BOM this repository builds against. -->
+        <getbrick.dependencies.version>${project.version}</getbrick.dependencies.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.getbrick</groupId>
+                <artifactId>getbrick-dependencies</artifactId>
+                <version>${getbrick.dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Internal modules, listed so siblings never carry a version. -->
+            <dependency>
+                <groupId>com.getbrick</groupId>
+                <artifactId>getbrick-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.getbrick</groupId>
+                <artifactId>getbrick-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.getbrick</groupId>
+                <artifactId>getbrick-beans</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.getbrick</groupId>
+                <artifactId>getbrick-context</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.getbrick</groupId>
+                <artifactId>getbrick-expression</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Test tooling every module shares; declared once, versions from the BOM. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
