@@ -19,6 +19,9 @@ jobs:
     name: Publish to Maven Central
     runs-on: ubuntu-latest
     environment: maven-central
+    permissions:
+      # softprops/action-gh-release 要写 GITHUB_TOKEN，顶层的 contents: read 会让它 403
+      contents: write
     steps:
       - uses: actions/checkout@v5
         with:
