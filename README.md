@@ -5,7 +5,7 @@ Getbrick 基础框架模块。构建配置与依赖版本统一来自
 
 ## 状态
 
-**规划中，代码尚未开始。** 模块划分、边界与依赖方向都还没定稿，定了之后才会建目录。
+**设计待评审，代码尚未开始。** 方案见 [docs/DESIGN.md](docs/DESIGN.md)，评审通过后才建模块。
 
 先看的只有构建骨架：wrapper、Spotless / Checkstyle / Enforcer / JaCoCo、
 CI 与发版。构建配置来自 [getbrick-build](https://github.com/getbrick/getbrick-build)，
