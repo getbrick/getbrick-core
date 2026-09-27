@@ -10,12 +10,12 @@
         <relativePath />
     </parent>
 
-    <artifactId>getbrick-core-parent</artifactId>
+    <artifactId>getbrick-ddd-parent</artifactId>
     <packaging>pom</packaging>
 
-    <name>Getbrick Core</name>
-    <description>Getbrick Foundation Framework - core modules</description>
-    <url>https://github.com/getbrick/getbrick-core</url>
+    <name>Getbrick DDD</name>
+    <description>Getbrick DDD - domain primitives and layering rules, zero framework dependencies</description>
+    <url>https://github.com/getbrick/getbrick-ddd</url>
 
     <licenses>
         <license>
@@ -25,17 +25,16 @@
         </license>
     </licenses>
 
-
     <scm>
-        <connection>scm:git:git@github.com:getbrick/getbrick-core.git</connection>
-        <developerConnection>scm:git:git@github.com:getbrick/getbrick-core.git</developerConnection>
+        <connection>scm:git:git@github.com:getbrick/getbrick-ddd.git</connection>
+        <developerConnection>scm:git:git@github.com:getbrick/getbrick-ddd.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/getbrick/getbrick-core</url>
+        <url>https://github.com/getbrick/getbrick-ddd</url>
     </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/getbrick/getbrick-core/issues</url>
+        <url>https://github.com/getbrick/getbrick-ddd/issues</url>
     </issueManagement>
 
     <properties>
@@ -53,32 +52,10 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- Internal modules, listed so siblings never carry a version. -->
-            <dependency>
-                <groupId>com.getbrick</groupId>
-                <artifactId>getbrick-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.getbrick</groupId>
-                <artifactId>getbrick-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.getbrick</groupId>
-                <artifactId>getbrick-beans</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.getbrick</groupId>
-                <artifactId>getbrick-context</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.getbrick</groupId>
-                <artifactId>getbrick-expression</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!--
+              内部制品统一在 getbrick-dependencies 里管版本，这里只声明用到的。
+              新增 getbrick-* 能力仓库时，在这里加一条无 version 的条目。
+            -->
         </dependencies>
     </dependencyManagement>
 
