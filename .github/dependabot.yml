@@ -1,6 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: maven
+    enabled: false
     directory: /
     schedule:
       interval: weekly
@@ -23,6 +24,7 @@ updates:
         update-types: ['patch']
 
   - package-ecosystem: maven
+    enabled: false
     directory: /getbrick-dependencies
     schedule:
       interval: weekly
@@ -34,6 +36,7 @@ updates:
       prefix: 'chore(deps)'
 
   - package-ecosystem: github-actions
+    enabled: false
     directory: /
     schedule:
       interval: weekly
@@ -44,6 +47,7 @@ updates:
       prefix: 'ci'
 
   - package-ecosystem: docker
+    enabled: false
     directory: /
     schedule:
       interval: weekly
